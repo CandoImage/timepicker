@@ -16,7 +16,6 @@
 }(function($, window, document, undefined) {
     (function() {
         var JQ_GTE_142 = $.fn.jquery.replace(/\.(\d)/g,".0$1").replace(/\.0(\d{2})/g,".$1") >= '1.04.02';
-        console.log(JQ_GTE_142);
 
         function pad(str, ch, length) {
             return (new Array(length + 1 - str.length).join(ch)) + str;
