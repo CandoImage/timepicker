@@ -15,6 +15,8 @@
     }
 }(function($, window, document, undefined) {
     (function() {
+        var JQ_GTE_142 = $.fn.jquery.replace(/\.(\d)/g,".0$1").replace(/\.0(\d{2})/g,".$1") >= '1.04.02';
+        console.log(JQ_GTE_142);
 
         function pad(str, ch, length) {
             return (new Array(length + 1 - str.length).join(ch)) + str;
@@ -54,7 +56,7 @@
                 widget.viewport = $('<ul></ul>').addClass( 'ui-timepicker-viewport' )
                                     .appendTo( widget.ui );
 
-                if ($.fn.jquery >= '1.4.2') {
+                if (JQ_GTE_142) {
                     widget.ui.delegate('a', 'mouseenter.timepicker', function() {
                         // passing false instead of an instance object tells the function
                         // to use the current instance
@@ -160,7 +162,7 @@
             _hasScroll: function() {
                 // fix for jQuery 1.6 new prop method
                 var m = typeof this.ui.prop !== 'undefined' ? 'prop' : 'attr';
-                return this.ui.height() < this.ui[m]('scrollHeight');
+                return this.ui.height() < this.viewport[m]('scrollHeight');
             },
 
             /**
@@ -296,12 +298,12 @@
 
                 if (widget._hasScroll()) {
                     var offset = item.offset().top - widget.ui.offset().top,
-                        scroll = widget.ui.scrollTop(),
-                        height = widget.ui.height();
+                        scroll = widget.viewport.scrollTop(),
+                        height = widget.viewport.height();
                     if (offset < 0) {
-                        widget.ui.scrollTop(scroll + offset);
+                        widget.viewport.scrollTop(scroll + offset);
                     } else if (offset >= height) {
-                        widget.ui.scrollTop(scroll + offset - height + item.height());
+                        widget.viewport.scrollTop(scroll + offset - height/2 + item.height());
                     }
                 }
 
@@ -396,7 +398,7 @@
                     // handle menu events when using jQuery versions previous to
                     // 1.4.2 (thanks to Brian Link)
                     // http://github.com/wvega/timepicker/issues#issue/4
-                    if ($.fn.jquery < '1.4.2') {
+                    if (!JQ_GTE_142) {
                         widget.viewport.children().remove();
                         widget.viewport.append(i.items);
                         widget.viewport.find('a').bind('mouseover.timepicker', function() {
@@ -481,7 +483,7 @@
                     i.items.each(function() {
                         var item = $(this), time;
 
-                        if ($.fn.jquery < '1.4.2') {
+                        if (!JQ_GTE_142) {
                             time = $.fn.timepicker.parseTime(item.find('a').text());
                         } else {
                             time = item.data('time-value');
@@ -489,6 +491,9 @@
 
                         if (time.getTime() === selectedTime.getTime()) {
                             widget.activate(i, item);
+
+                            // scroll to active item
+                            //widget.container.scrollTop(item.position().top);
                             return false;
                         }
                         return true;
